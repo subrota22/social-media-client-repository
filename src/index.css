@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&family=Nerko+One&family=Raleway:wght@300;400&family=Roboto:ital,wght@0,500;1,300&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #121C0D;
+  color: white;
+  font-weight: bold;
+}
+body::-webkit-scrollbar{
+  width: 12px;
+  background-color: blue;
+}
+body::-webkit-scrollbar-thumb{
+  border-radius: 18px;
+  background-color: rgb(14, 4, 12);
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
