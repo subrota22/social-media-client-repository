@@ -1,7 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import React, { } from 'react';
-import { Helmet } from 'react-helmet';
 import { Navigate } from 'react-router-dom';
 import Skeleton from '../../../Share/Skeleton/Skeleton';
 
@@ -30,7 +29,6 @@ const DisplayPost = () => {
     }
     return (
         <>
-            <Helmet><title>Media</title></Helmet>
             <h2 className='text-center text-white text-2xl my-4'> Our top <span className='text-info'>{posts.length}</span> post is here !! </h2>
             <div className="ml-32 md:ml-0">
             <div className="grid grid-cols-1 md:grid-cols-2 mx-4 lg:grid-cols-3 gap-5 my-4">

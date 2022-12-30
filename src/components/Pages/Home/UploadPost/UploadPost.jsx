@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { Helmet } from "react-helmet";
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -77,7 +76,6 @@ const UploadPost = () => {
 
     return (
         <>
-            <Helmet> <title> Upload post </title> </Helmet>
 
             <form className='py-10 text-white border-2 my-16 bg-gray-700 rounded-3xl mx-auto p-12 ' autoComplete='off' id='postNow' onSubmit={handleSubmit} style={{width:"40%"}}>
                 <h2 className='text-white text-2xl text-center my-3 uppercase'> Add your post </h2>
