@@ -1,14 +1,17 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Helmet } from 'react-helmet';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthProvider } from '../../UserContext/UserContext';
 import ClipLoader from "react-spinners/ClipLoader";
+import { authUser } from '../../authUser/authUser';
 const Register = () => {
     const [fileName, setFileName] = useState({});
     const [fileStatus, setFileStatus] = useState(false);
     const [registerLoad, setRegisterLoad] = useState(false);
+    const location = useLocation() ;
+    const from = location?.state?.from?.pathname || "/" ;
     const naviagate = useNavigate();
     //create user 
     const {
@@ -51,8 +54,7 @@ const Register = () => {
             .then(data => {
                 createNewUser(email, password)
                     .then((result) => {
-                        console.log(result);
-
+                        authUser(result.user?.email) ;
                         const imageLink = data.data.display_url;
                         const postData = {
                             name: name,
@@ -61,10 +63,11 @@ const Register = () => {
                             phoneNumber: phone_number,
                             companyName: company_name,
                         }
-                        fetch("https://social-media-dusky.vercel.app/users", {
+                        fetch("https://social-media-subrota22.vercel.app/users", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
                             },
                             body: JSON.stringify(postData)
                         })
@@ -79,10 +82,10 @@ const Register = () => {
                                             updateUser(name , imageLink)
                                             .then(() => {
                                             toast.success("Your data added successfully !! ") ;
+                                            return naviagate(from , {replace:true}) ;
                                             })    
                                         })
                                         .catch(error => toast.error(error.message));
-                                    naviagate("/");
 
                                 }
                             })
@@ -98,10 +101,11 @@ const Register = () => {
     const handleGoogleLogin = () => {
         setRegisterLoad(true);
         loginWithGoogle()
-            .then(() => {
+            .then((result) => {
                 toast.success("Your are login successfully with Google account !!");
                 setRegisterLoad(false);
-                naviagate("/");
+                authUser(result.user?.email) ;
+                return naviagate(from , {replace:true}) ;
             })
             .catch(error => { toast.error(error.message); setRegisterLoad(false) });
 
@@ -110,10 +114,11 @@ const Register = () => {
     const handleGitHubLogin = () => {
         setRegisterLoad(true);
         loginWithGitHub()
-            .then(() => {
+            .then((result) => {
                 toast.success("Your are login successfully with GitHub account !!");
                 setRegisterLoad(false);
-                naviagate("/");
+                authUser(result.user?.email) ;
+                return naviagate(from , {replace:true}) ;
             })
             .catch(error => { toast.error(error.message); setRegisterLoad(false) });
 

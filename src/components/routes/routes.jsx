@@ -1,10 +1,11 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import MainLayout from "../../MainLayout/MainLayout";
 import About from "../Pages/About/About";
 import Contact from "../Pages/Contact/Contact";
 import Home from "../Pages/Home/Home/Home";
 import Login from "../Pages/Login/Login";
 import Media from "../Pages/Media/Media";
+import PageError from "../Pages/PageError/PageError";
 import PostDetails from "../Pages/PostDetails/PostDetails";
 import Register from "../Pages/Register/Register";
 import ResetPassword from "../Pages/ResetPassword/ResetPassword";
@@ -21,8 +22,19 @@ export const routes = createBrowserRouter([
             },
             {
                 path: "/post-detials/:id",
-                loader: ({ params }) => fetch(`https://social-media-dusky.vercel.app/posts/${params.id}`)
-                    .then(res => res.json())
+                loader: ({ params }) => fetch(`https://social-media-subrota22.vercel.app/posts/${params.id}` ,{
+                    headers:{
+                        authentication: `Bearer ${localStorage.getItem("social-media-token")} ` ,
+                       
+                    }
+                })
+                    .then(res => {
+                        if(res.status === 403 ) {
+                            return <Navigate to="/login"></Navigate>
+                        }else{
+                            return res.json() ;
+                        }
+                    })
                     .then(data => data)
                 , element: <PrivateRouter><PostDetails></PostDetails></PrivateRouter>
             }
@@ -42,6 +54,9 @@ export const routes = createBrowserRouter([
             {
                 path:"/contact" , element:<PrivateRouter><Contact></Contact></PrivateRouter>
             } ,
+            {
+                path:"*" , element:<PageError></PageError>
+            }
         ]
     }
 ])

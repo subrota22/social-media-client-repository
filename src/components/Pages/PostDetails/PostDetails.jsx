@@ -1,7 +1,7 @@
 
 import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import emptyHeart from "../../../images/emptyHeart.png";
 import redHeart from "../../../images/redHeart.png";
 import blackHeart from "../../../images/blackHeart.png";
@@ -9,15 +9,20 @@ import { useQuery } from "@tanstack/react-query";
 import Skeleton from '../../Share/Skeleton/Skeleton';
 import { AuthProvider } from '../../UserContext/UserContext';
 import { toast } from 'react-toastify';
+import ClipLoader from 'react-spinners/ClipLoader';
 const PostDetails = () => {
+    //https://social-media-subrota22.vercel.app/
     const singlePostData = useLoaderData();
     const postId = singlePostData._id;
     const [likerInfo, setLikerInfo] = useState({});
     const [dislikerInfo, setDislikerInfo] = useState({});
     const [like, setLike] = useState(false);
     const [dislike, setDislike] = useState(false);
+    const [dislikeLoad, setDislikeLoad] = useState(false);
+    const [likeLoad, setLikeLoad] = useState(false);
+    const navigate = useNavigate() ;
 
-    const { user } = useContext(AuthProvider);
+    const { user , setLoad , setUserData , signOutUser} = useContext(AuthProvider);
     const likerData = {
         likerName: user?.displayName,
         likerEmail: user?.email,
@@ -32,19 +37,38 @@ const PostDetails = () => {
     //get post data
     const { data: post = {}, isLoading, refetch } = useQuery({
         queryKey: ['post'],
-        queryFn: async () => {
-            const url = `https://social-media-dusky.vercel.app/posts/${postId}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            return data;
-        }
+        queryFn:  () => 
+            fetch(`https://social-media-subrota22.vercel.app/posts/${postId}` , 
+                {
+                   headers:{
+                       authentication: `Bearer ${localStorage.getItem("social-media-token")}` 
+                   }  
+            })
+            .then(res => {
+                if(res.status === 403) {
+                    setUserData({});
+                    signOutUser() ;
+                    return navigate("/login")  ;
+                }else{
+                    return res.json() ;
+                }
+            })
+            .then(data =>  {
+                setLoad(false) ;
+                return data;
+            }) 
+          
     })
 
     //get liker
 
     React.useEffect(() => {
-        const url = `https://social-media-dusky.vercel.app/likerData?email=${user?.email}&&id=${postId}`;
-        fetch(url)
+        const url = `https://social-media-subrota22.vercel.app/likerData?email=${user?.email}&&id=${postId}`;
+        fetch(url , {
+            headers:{
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+            }   
+        })
             .then(res => res.json())
             .then(data => {
                 setLikerInfo(data);
@@ -55,12 +79,17 @@ const PostDetails = () => {
     //get disliker
 
     React.useEffect(() => {
-        const url = `https://social-media-dusky.vercel.app/dislikerData?email=${user?.email}&&id=${postId}`;
-        fetch(url)
+        const url = `https://social-media-subrota22.vercel.app/dislikerData?email=${user?.email}&&id=${postId}`;
+        fetch(url , 
+             {
+                headers:{
+                    authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+                }  
+        })
             .then(res => res.json())
             .then(data => {
                 setDislikerInfo(data);
-                console.log("--->", data);
+                // console.log("--->", data);
             });
 
     }, [postId, user?.email]);
@@ -69,11 +98,13 @@ const PostDetails = () => {
     //send like 
 
     const handleLike = () => {
-        fetch(`https://social-media-dusky.vercel.app/postLike?postId=${postId}`, {
+        setLikeLoad(true) ;
+        fetch(`https://social-media-subrota22.vercel.app/postLike?postId=${postId}`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' ,
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
             }
             ,
             body: JSON.stringify(likerData)
@@ -82,6 +113,7 @@ const PostDetails = () => {
             .then(data => {
                 if (data.acknowledged) {
                     refetch();
+                    setLikeLoad(false) ;
                 }
             })
             .catch(error => console.log(error));
@@ -91,11 +123,13 @@ const PostDetails = () => {
     //send withdraw like
 
     const handleWithdrawLike = () => {
-        fetch(`https://social-media-dusky.vercel.app/postWithdrawLike?postId=${postId}`, {
+        setLikeLoad(true) ;
+        fetch(`https://social-media-subrota22.vercel.app/postWithdrawLike?postId=${postId}`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' ,
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
             }
             ,
             body: JSON.stringify(likerData)
@@ -104,6 +138,7 @@ const PostDetails = () => {
             .then(data => {
                 if (data.acknowledged) {
                     refetch();
+                    setLikeLoad(false) ;
                 }
             })
             .catch(error => console.log(error));
@@ -114,11 +149,13 @@ const PostDetails = () => {
     //send dislike 
 
     const handleDislike = () => {
-        fetch(`https://social-media-dusky.vercel.app/postDisLike?postId=${postId}`, {
+        setDislikeLoad(true) ;
+        fetch(`https://social-media-subrota22.vercel.app/postDisLike?postId=${postId}`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' ,
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
             }
             ,
             body: JSON.stringify(dislikerData)
@@ -127,6 +164,7 @@ const PostDetails = () => {
             .then(data => {
                 if (data.acknowledged) {
                     refetch();
+                    setDislikeLoad(false) ;
                 }
             })
             .catch(error => console.log(error));
@@ -136,11 +174,13 @@ const PostDetails = () => {
     //send withdraw dislike 
 
     const handleWithdrawDislike = () => {
-        fetch(`https://social-media-dusky.vercel.app/postWithdrawDisike?postId=${postId}`, {
+        setDislikeLoad(true) ;
+        fetch(`https://social-media-subrota22.vercel.app/postWithdrawDisike?postId=${postId}`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' ,
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
             }
             ,
             body: JSON.stringify(likerData)
@@ -149,6 +189,7 @@ const PostDetails = () => {
             .then(data => {
                 if (data.acknowledged) {
                     refetch();
+                    setDislikeLoad(false) ;
                 }
             })
             .catch(error => console.log(error));
@@ -169,10 +210,11 @@ const PostDetails = () => {
             profile: user?.photoURL,
             postId: postId,
         }
-        fetch("https://social-media-dusky.vercel.app/comments", {
+        fetch("https://social-media-subrota22.vercel.app/comments", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
             },
             body: JSON.stringify(commentData)
         })
@@ -189,7 +231,11 @@ const PostDetails = () => {
 
     const { data: comments = [], isLoading: commentsLoad, refetch: commentsFetch } = useQuery({
         queryKey: ["comments"],
-        queryFn: () => fetch(`https://social-media-dusky.vercel.app/comments/${postId}`)
+        queryFn: () => fetch(`https://social-media-subrota22.vercel.app/comments/${postId}` , {
+            headers:{
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+            }
+        })
             .then(res => res.json())
             .then(data => data)
     });
@@ -225,7 +271,7 @@ const PostDetails = () => {
                                         <img src={emptyHeart} alt="emptyHeart" onClick={handleLike}
                                             className='h-10 w-10 hover:cursor-pointer' />
                                 }
-                                <p className='text-info mx-4 text-lg'> <strong>Likes: <span className='btn btn-circle text-2xl btn-info text-white'>{post?.likes ? post?.likes : "0"}</span> </strong> </p>
+                                <p className='text-info mx-4 text-lg'> <strong>Likes: <span className='btn btn-circle text-2xl btn-info text-white'>{likeLoad? <ClipLoader color='white'></ClipLoader> :  post?.likes ? post?.likes : "0"}</span> </strong> </p>
                             </div>
                             {/* --------------- dislik ------------- */}
 
@@ -241,7 +287,7 @@ const PostDetails = () => {
                                         <img src={emptyHeart} alt="emptyHeart" onClick={handleDislike}
                                             className='h-10 w-10 hover:cursor-pointer' />
                                 }
-                                <p className='text-info  mx-4 text-lg'> <strong>Disikes: <span className='btn btn-circle text-2xl btn-info text-white'>{post?.disLikes ? post?.disLikes : "0"}</span> </strong> </p>
+                                <p className='text-info  mx-4 text-lg'> <strong>Disikes: <span className='btn btn-circle text-2xl btn-info text-white'>{dislikeLoad ? <ClipLoader color='white'></ClipLoader> :  post?.disLikes ? post?.disLikes : "0"}</span> </strong> </p>
                             </div>
 
                         </div>

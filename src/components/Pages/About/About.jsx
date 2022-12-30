@@ -1,39 +1,65 @@
 import { useQuery } from '@tanstack/react-query';
-import React, {  useState } from 'react';
+import React, {  useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Skeleton from '../../Share/Skeleton/Skeleton';
+import { AuthProvider } from '../../UserContext/UserContext';
 const About = () => {
     const [aboutInfo , setAboutInfo] = useState({}) ;
     const [info , setInfo] = useState(aboutInfo) ;
     const [showModal , setShowModal] = useState(true) ;
     const [btnDisabled , setDisabled] = useState(true) ;
-     console.log(info);
-
+    const { setUserData , signOutUser} = useContext(AuthProvider);
     const { data: abouts = [], isLoading, refetch } = useQuery({
         queryKey: ['about'],
-        queryFn: () => fetch("https://social-media-dusky.vercel.app/about")
-            .then(res => res.json())
+        queryFn: () => fetch("https://social-media-subrota22.vercel.app/about" , {
+            headers:{
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+            }   
+        }) 
+            .then(res => {
+                if(res.status === 403) {
+                    setUserData({});
+                    signOutUser() ;
+                    return navigate("/login")  ;
+                }else{
+                    return res.json() ;
+                }
+            })
             .then(data => data)
             .catch(error => console.log(error))
     });
+    const navigate = useNavigate() ;
 
     //get about data
     const handleAboutData = (id) => {
-        setShowModal(true) ;
         if(!id) return ;
-        fetch(`https://social-media-dusky.vercel.app/about/${id}`)
-        .then(res => res.json())
-            .then(data => setAboutInfo(data))
+        fetch(`https://social-media-subrota22.vercel.app/about/${id}` , {
+            headers:{
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+            }  
+        })
+        .then(res => {
+            if(res.status === 403) {
+                setUserData({});
+                signOutUser() ;
+                return navigate("/login")  ;
+            }else{
+                return res.json() ;
+            }
+        })
+            .then(data => {setAboutInfo(data); console.log(data)})
             .catch(error => console.log(error))
     }
    //handleUpdate
    const handleUpdate = (event) => {
     event.preventDefault() ;
-    fetch(`https://social-media-dusky.vercel.app/update-about-information/${aboutInfo._id}`, {
+    fetch(`https://social-media-subrota22.vercel.app/update-about-information/${aboutInfo._id}`, {
     method:"PUT" ,
     headers:{
         "Content-Type" : "application/json" ,
+        authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
     } ,
     body: JSON.stringify(info) 
     })
@@ -65,12 +91,12 @@ const About = () => {
 
                 <div className="max-w-lg p-6 mx-auto bg-gray-700  border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
 
-                    <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+                    <input type="checkbox" id="aboutModal" className="modal-toggle" />
                    {
                     showModal &&
                      <div className="modal">
                         <div className="modal-box relative">
-                            <label htmlFor="my-modal-3" className="btn btn-sm btn-primary text-xl mb-2 btn-circle absolute right-2 top-2">✕</label>
+                            <label htmlFor="aboutModal" className="btn btn-sm btn-primary text-xl mb-2 btn-circle absolute right-2 top-2">✕</label>
                             <form className="space-y-6" autoComplete='on' onSubmit={handleUpdate}>
                                 <div>
                                     <label for="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
@@ -109,7 +135,9 @@ const About = () => {
                             <div className='about' key={about._id}>
 
                                 {/* The button to open modal */}
-                                <label htmlFor="my-modal-3" onClick={() => handleAboutData(about?._id  , setShowModal(true))} className="btn btn-primary px-8 my-10 md:-mt-12  float-right">Edit</label>
+                             
+                              <label htmlFor="aboutModal" onMouseEnter={() => setShowModal(true) + handleAboutData(about?._id)}  className="btn btn-primary px-8 my-10 md:-mt-12  float-right">Edit</label>
+
                                 <div className="text-center">
                                     <img src={about?.profile} alt="profile"
                                     className='w-40 h-40 rounded-full ml-36 mt-12 mb-3 border-2  border-info' />

@@ -8,12 +8,14 @@ import {
     signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile,
 
 }
-    from "firebase/auth";
+from "firebase/auth";
 import app from '../firebase.config/firebase.config';
 import { useState } from 'react';
 export const AuthProvider = createContext();
 const auth = getAuth(app);
+
 const UserContext = ({ children }) => {
+    const [load , setLoad] = useState(true) ;
     //user data set 
     const [user , setUserData] = useState({}) ;
     //social auth provider
@@ -25,22 +27,27 @@ const UserContext = ({ children }) => {
     };
     //send email verification
     const sendEmailVerify = () => {
+        setLoad(true) ;
         return sendEmailVerification(auth.currentUser);
     }
     //login user
     const loginUser = (email, password) => {
+        setLoad(true) ;
         return signInWithEmailAndPassword(auth, email, password);
     }
     //login with google
     const loginWithGoogle = () => {
+        setLoad(true) ;
         return signInWithPopup(auth, googleProvider);
     }
     //login with github
     const loginWithGitHub = () => {
+        setLoad(true) ;
         return signInWithPopup(auth, githubProvider);
     }
     //reset password
     const resetPassword = (email) => {
+        setLoad(true) ;
         return sendPasswordResetEmail(auth, email);
     }
     //user data 
@@ -48,6 +55,7 @@ const UserContext = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth , (userInfo) => {
     if(userInfo) {
         setUserData(userInfo) ;
+        setLoad(false) ;
     }
     return () => unsubscribe () ;
     })
@@ -68,7 +76,7 @@ const UserContext = ({ children }) => {
     const authInfo = {
         createNewUser, sendEmailVerify, loginUser, loginWithGoogle,
         loginWithGitHub, resetPassword , user , signOutUser , setUserData ,
-        updateUser
+        updateUser , load , setLoad
     };
     return (
         <>

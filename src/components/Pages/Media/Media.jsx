@@ -9,12 +9,13 @@ const Media = () => {
     const [pageLoading, setPageLoading] = useState(true);
     const [posts, setPosts] = useState([]);
     useEffect(() => {
-        axios.get("https://social-media-dusky.vercel.app/posts")
+        axios.get("https://social-media-subrota22.vercel.app/posts")
             .then(data => {
                 setPosts(data.data);
                 setPageLoading(false);
+                console.log("data" , data);
             })
-            .catch(error => console.log(error))
+            .catch(error => console.log("-->" , error))
     }, [axios])
     //   console.log(posts);
     if (pageLoading) {

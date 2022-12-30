@@ -81,9 +81,9 @@ const navigate = useNavigate() ;
                 </>
               }
              
-      {    user?.uid &&    <div className="tooltip tooltip-open tooltip-bottom text-info" data-tip={user?.displayName}>
+      {    user?.uid &&    <div className="tooltip hover:tooltip-open tooltip-left  tooltip-primary" data-tip={user?.displayName}>
                 <div className="avatar">
-                  <div className="w-12 rounded-full -mt-3 ring ring-primary ring-offset-base-100 ring-offset-2">
+                  <div className="w-12 rounded-full -mt-3 ring ring-info ring-offset-base-100 ring-offset-2">
                     <img src={user?.photoURL ? user?.photoURL : "https://i.ibb.co/RSCmwXf/imagenot.jpg"} alt='profile' />
                   </div>
                 </div>

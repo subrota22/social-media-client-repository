@@ -1,37 +1,43 @@
 import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'react-toastify';
+import { authUser } from '../../authUser/authUser';
 import { AuthProvider } from '../../UserContext/UserContext';
 
 const Login = () => {
   const [loginLoad, setLoginLoad] = useState(false);
+  const location = useLocation() ;
+  const from = location?.state?.from?.pathname || "/" ;
+  const naviagate = useNavigate();
   const {
     loginUser, loginWithGoogle, loginWithGitHub,
   } = useContext(AuthProvider);
-  const naviagate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     setLoginLoad(true);
     const email = event.target.email.value;
     const password = event.target.password.value;
     loginUser(email, password)
-      .then(() => {
+      .then((result) => {
         toast.success("Congrasulations you are login successfully !!");
         setLoginLoad(false);
-        naviagate("/") ;
+        authUser(result.user?.email) ;
+        naviagate(from , {replace:true}) ;
       })
-      .catch(error => toast.error(error.message))
+      .catch(error =>{ toast.error(error.message) ; setLoginLoad(false)} )
   }
   //handle google login
   const handleGoogleLogin = () => {
     setLoginLoad(true);
     loginWithGoogle()
-      .then(() => {
+      .then((result) => {
         toast.success("Your are login successfully with Google account !!");
         setLoginLoad(false);
-        naviagate("/") ;
+        authUser(result.user?.email) ;
+        naviagate(from , {replace:true}) ;
       })
       .catch(error => { toast.error(error.message); setLoginLoad(false) });
 
@@ -40,14 +46,16 @@ const Login = () => {
   const handleGitHubLogin = () => {
     setLoginLoad(true);
     loginWithGitHub()
-      .then(() => {
+      .then((result) => {
         toast.success("Your are login successfully with GitHub account !!");
         setLoginLoad(false);
-        naviagate("/") ;
+        authUser(result.user?.email) ;
+        naviagate(from , {replace:true}) ;
       })
       .catch(error => { toast.error(error.message); setLoginLoad(false) });
 
   }
+ 
   return (
     <>
       <Helmet><title>Login</title></Helmet>

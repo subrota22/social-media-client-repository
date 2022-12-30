@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { } from 'react';
 import { Helmet } from 'react-helmet';
+import { Navigate } from 'react-router-dom';
 import Skeleton from '../../../Share/Skeleton/Skeleton';
 
 
@@ -9,8 +10,17 @@ const DisplayPost = () => {
 
     const { data: posts, isLoading } = useQuery({
         queryKey: ["posts"],
-        queryFn: () => fetch("https://social-media-dusky.vercel.app/topPosts")
-            .then(res => res.json())
+        queryFn: () => fetch("https://social-media-subrota22.vercel.app/topPosts" , {
+            headers:{
+                authentication: `Bearer ${localStorage.getItem("social-media-token")} ` 
+            }
+        })
+            .then(res => {
+                if(res.status === 403){
+                 return <Navigate to="/login"></Navigate>
+                }
+                return res.json() ;
+            })
             .then(data => data)
             .catch(error => console.log(error))
     })

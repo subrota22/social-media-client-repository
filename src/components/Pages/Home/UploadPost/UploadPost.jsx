@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { AuthProvider } from '../../../UserContext/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 const UploadPost = () => {
     const [fileName, setFileName] = useState({});
     const [fileStatus, setFileStatus] = useState(false);
@@ -48,14 +48,21 @@ const UploadPost = () => {
                     email:user?.email , 
                     profile: user?.displayName,
                 }
-                fetch("https://social-media-dusky.vercel.app/posts", {
+                fetch("https://social-media-subrota22.vercel.app/posts", {
                     method: "POST",
                     headers: {
+                        
                         "Content-Type": "application/json",
+                        authentication: `Bearer ${localStorage.getItem("social-media-token")} ` ,
                     },
                     body: JSON.stringify(postData)
                 })
-                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === 403){
+                         return <Navigate to="/login"></Navigate>
+                        }
+                        return res.json() ;
+                    })
                     .then(data => {
                         if (data.acknowledged) {
                             toast.success("Congrasulations your post send sucessfully !! ");
