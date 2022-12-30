@@ -38,7 +38,7 @@ const DisplayPost = () => {
                         <div key={post._id} className="max-w-sm bg-gray-700 hover:scale-95 cursor-pointer  duration-1000 border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
                             <img className="rounded-t-lg h-80 w-full" src={post?.postImage ? post?.postImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"} alt="postImage" />
                             <div className="p-5">
-                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <p className="mb-3 font-normal text-white">
                                     { post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." :  post?.postText}
                                 </p>
                             <p className='text-info text-md mt-2'> Post time: {post?.time ?post?.time : "00/00/00" } </p>
