@@ -35,9 +35,16 @@ const Media = () => {
                 <img className="rounded-t-lg h-80 w-full" src={post?.postImage ? post?.postImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"} alt="postImage" />
             </NavLink>
             <div className="p-5">
-               <p className="mb-3 font-normal text-white dark:text-gray-400">
-                    { post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." :  post?.postText}
-                </p>
+            {<>
+                                    {    post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." : post?.postText
+                                    }
+                                         </> ?<>
+                                    {    post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." : post?.postText
+                                    }
+                                         </> : "text not found"
+
+                                         
+                                        }
 
                 <p className='text-info'>Total likes : <span className='btn btn-circle btn-primary text-white p-2'>{post?.likes ? post?.likes : "0"}</span></p>
                 

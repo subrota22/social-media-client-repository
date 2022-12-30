@@ -39,7 +39,16 @@ const DisplayPost = () => {
                             <img className="rounded-t-lg h-80 w-full" src={post?.postImage ? post?.postImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"} alt="postImage" />
                             <div className="p-5">
                             <p className="mb-3 font-normal text-white">
-                                    { post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." :  post?.postText}
+                                    {<>
+                                    {    post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." : post?.postText
+                                    }
+                                         </> ?<>
+                                    {    post?.postText?.length > 100 ?  post?.postText?.slice(0 , 100) + "..." : post?.postText
+                                    }
+                                         </> : "text not found"
+
+                                         
+                                        }
                                 </p>
                             <p className='text-info text-md mt-2'> Post time: {post?.time ?post?.time : "00/00/00" } </p>
                             <p className='text-info text-md mt-2'>Post date: {post?.date ?post?.date : "00/00/00"} </p>

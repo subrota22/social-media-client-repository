@@ -253,7 +253,7 @@ const PostDetails = () => {
                 <div class="flex flex-col items-center bg-gray-700 border rounded-lg shadow-md md:flex-col  hover:bg-cyan-700 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                     <img class="object-cover w-40 h-40 rounded-full border-2 border-primary my-3" src={post?.postImage ? post?.postImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"} alt="postImage" />
                     <div class="flex flex-col justify-between p-4 leading-normal">
-                        <p class="mb-3 font-normal text-xl">{post.postText}</p>
+                        <p class="mb-3 font-normal text-xl">{post?.postText ? post?.postText : "text not found"}</p>
                         <h5 className="mb-2 text-lg font-bold tracking-tight dark:text-white">Post time: {post?.time ? post?.time : "00/00/00"}</h5>
                         <h5 className="mb-2 text-lg font-bold tracking-tight dark:text-white">Post date: {post?.date ? post?.date : "00/00/00"}</h5>
 
