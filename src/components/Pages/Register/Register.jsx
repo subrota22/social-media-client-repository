@@ -42,7 +42,7 @@ const Register = () => {
         }
         const first_name = event.target.first_name.value.trim();
         const last_name = event.target.last_name.value.trim();
-        const name = first_name + last_name;
+        const name = first_name + " " + last_name;
         const phone_number = event.target.phone_number.value.trim();
         const company_name = event.target.phone_number.value.trim();
         console.log(email);
